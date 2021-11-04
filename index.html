@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<!--
+このハイパーテキストは Google Blockly を利用しています。
+https://github.com/google/blockly
+https://developers.google.com/blockly/
+
+このハイパーテキストのライセンスは以下のライセンスに準じます。
+本体部分
+https://github.com/google/blockly/blob/master/LICENSE
+セーブ＆ロード機能
+https://qiita.com/terms
+
+このハイパーテキストは以下のウェブページ掲載のコードを改変し作成されました。
+本体部分
+https://github.com/google/blockly/blob/master/demos/generator/index.html
+https://github.com/google/blockly/blob/master/demos/headless/index.html
+ツールボックス
+https://github.com/google/blockly/blob/master/demos/code/index.html
+セーブ＆ロード機能
+https://qiita.com/kerupani129/items/99fd7a768538fcd33420
+
+このハイパーテキストの作成にあたり以下の文献を参考にしました。
+https://developers.google.com/blockly/reference/js/Blockly.Xml#.domToPrettyText
+https://qiita.com/mvm43236/items/a5892f8e7a5037e37c1f
+https://techacademy.jp/magazine/5488
+https://techacademy.jp/magazine/34538
+https://emojipedia.org/wastebasket/
+https://www.w3.org/International/questions/qa-html-encoding-declarations.ja
+https://www.nishishi.com/css/textarea-height-vh.html
+-->
+
+<!--ウェブページのハイパーテキスト記述部-->
+<html lang="ja">
+<!--ウェブページのヘッダー-->
+<head>
+  <!--ウェブページのテキストエンコーディング-->
+  <meta charset="utf-8">
+  <!--ウェブページのページタイトル-->
+  <title>Blockly Programming Environment Simplified</title>
+  <!--ウェブページ外部スクリプトのインクルード-->
+  <script src="./scripts/blockly_compressed.js"></script>
+  <script src="./scripts/blocks_compressed.js"></script>
+  <script src="./scripts/python_compressed.js"></script>
+  <script src="./scripts/javascript_compressed.js"></script>
+  <script src="./msg/js/ja.js"></script>
+
+  <!--ウェブページのスタイル-->
+  <style>
+    body {
+      background-color: #fff;
+      font-family: sans-serif;
+    }
+    h1 {
+      font-weight: normal;
+      font-size: 140%;
+    }
+    td {
+      vertical-align: top;
+    }
+    textarea {
+      width: 100%;
+      height: 60.6vh;
+    }
+  </style>
+</head>
+<body>
+  <!--表題-->
+  <p align="center"><b><a href="https://developers.google.com/blockly/">Blockly</a> プログラミング環境 簡易版</b></p>
+
+  <!--セーブ＆ロードボタン-->
+  <p align="right">
+    <button onclick="uploadXml()">💾プログラムをロード⇧</button>
+    <button onclick="downloadXml()">💾プログラムをセーブ⇩</button>
+    <button onclick="downloadHtml()">🌐Webページでセーブ⇩</button>
+  </p>
+
+  <!--機能呼び出しボタン-->
+  <p align="right">
+    <button onclick="clearWorkspace()">🗑️Blockをごみ箱へ</button>
+    <button onclick="showJavaScript()"><b>JS</b> JavaScriptを表示</button>
+    <button onclick="showPython()">🐍Pythonを表示</button>
+    <button onclick="showXml()">🔎XMLソースを表示</button>
+    <button onclick="runCode()">▶プログラムを実行</button>
+  </p>
+
+  <table style="width: 100%">
+    <tr>
+      <!--左ペイン（Blockly）-->
+      <td style="width:61.5%">
+  <!--Blocklyのワークスペース挿入エリア-->
+  <div id="blocklyDiv" style="width: 100%; height: 61.5vh"></div>
+
+  <!--Blocklyのツールボックス（日本語版）-->
+  <xml xmlns="https://developers.google.com/blockly/xml" id="toolbox" style="display: none">
+    <category name="論理" colour="%{BKY_LOGIC_HUE}">
+      <block type="controls_if"></block>
+      <block type="logic_compare"></block>
+      <block type="logic_operation"></block>
+      <block type="logic_negate"></block>
+      <block type="logic_boolean"></block>
+      <block type="logic_null"></block>
+      <block type="logic_ternary"></block>
+    </category>
+    <category name="繰り返し" colour="%{BKY_LOOPS_HUE}">
+      <block type="controls_repeat_ext">
+        <value name="TIMES">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="controls_whileUntil"></block>
+      <block type="controls_for">
+        <value name="FROM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="TO">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+        <value name="BY">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="controls_forEach"></block>
+      <block type="controls_flow_statements"></block>
+    </category>
+    <category name="演算" colour="%{BKY_MATH_HUE}">
+      <block type="math_number">
+        <field name="NUM">123</field>
+      </block>
+      <block type="math_arithmetic">
+        <value name="A">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="B">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_single">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">9</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_trig">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">45</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_constant"></block>
+      <block type="math_number_property">
+        <value name="NUMBER_TO_CHECK">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_round">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">3.1</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_on_list"></block>
+      <block type="math_modulo">
+        <value name="DIVIDEND">
+          <shadow type="math_number">
+            <field name="NUM">64</field>
+          </shadow>
+        </value>
+        <value name="DIVISOR">
+          <shadow type="math_number">
+            <field name="NUM">10</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_constrain">
+        <value name="VALUE">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="LOW">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="HIGH">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_random_int">
+        <value name="FROM">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="TO">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="math_random_float"></block>
+      <block type="math_atan2">
+        <value name="X">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+        <value name="Y">
+          <shadow type="math_number">
+            <field name="NUM">1</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+    <category name="テキスト" colour="%{BKY_TEXTS_HUE}">
+      <block type="text"></block>
+      <block type="text_join"></block>
+      <block type="text_append">
+        <value name="TEXT">
+          <shadow type="text"></shadow>
+        </value>
+      </block>
+      <block type="text_length">
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_isEmpty">
+        <value name="VALUE">
+          <shadow type="text">
+            <field name="TEXT"></field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_indexOf">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">テキスト</field>
+          </block>
+        </value>
+        <value name="FIND">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_charAt">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">テキスト</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_getSubstring">
+        <value name="STRING">
+          <block type="variables_get">
+            <field name="VAR">テキスト</field>
+          </block>
+        </value>
+      </block>
+      <block type="text_changeCase">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_trim">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_print">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="text_prompt_ext">
+        <value name="TEXT">
+          <shadow type="text">
+            <field name="TEXT">abc</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+    <category name="リスト" colour="%{BKY_LISTS_HUE}">
+      <block type="lists_create_with">
+        <mutation items="0"></mutation>
+      </block>
+      <block type="lists_create_with"></block>
+      <block type="lists_repeat">
+        <value name="NUM">
+          <shadow type="math_number">
+            <field name="NUM">5</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="lists_length"></block>
+      <block type="lists_isEmpty"></block>
+      <block type="lists_indexOf">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">リスト</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getIndex">
+        <value name="VALUE">
+          <block type="variables_get">
+            <field name="VAR">リスト</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_setIndex">
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR">リスト</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_getSublist">
+        <value name="LIST">
+          <block type="variables_get">
+            <field name="VAR">リスト</field>
+          </block>
+        </value>
+      </block>
+      <block type="lists_split">
+        <value name="DELIM">
+          <shadow type="text">
+            <field name="TEXT">,</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="lists_sort"></block>
+    </category>
+    <category name="色" colour="%{BKY_COLOUR_HUE}">
+      <block type="colour_picker"></block>
+      <block type="colour_random"></block>
+      <block type="colour_rgb">
+        <value name="RED">
+          <shadow type="math_number">
+            <field name="NUM">100</field>
+          </shadow>
+        </value>
+        <value name="GREEN">
+          <shadow type="math_number">
+            <field name="NUM">50</field>
+          </shadow>
+        </value>
+        <value name="BLUE">
+          <shadow type="math_number">
+            <field name="NUM">0</field>
+          </shadow>
+        </value>
+      </block>
+      <block type="colour_blend">
+        <value name="COLOUR1">
+          <shadow type="colour_picker">
+            <field name="COLOUR">#ff0000</field>
+          </shadow>
+        </value>
+        <value name="COLOUR2">
+          <shadow type="colour_picker">
+            <field name="COLOUR">#3333ff</field>
+          </shadow>
+        </value>
+        <value name="RATIO">
+          <shadow type="math_number">
+            <field name="NUM">0.5</field>
+          </shadow>
+        </value>
+      </block>
+    </category>
+    <sep></sep>
+    <category name="変数" colour="%{BKY_VARIABLES_HUE}" custom="VARIABLE"></category>
+    <category name="関数" colour="%{BKY_PROCEDURES_HUE}" custom="PROCEDURE"></category>
+  </xml>
+
+  <!--Blocklyのサンプルコード（銀河ヒッチハイクガイド参照）-->
+  <xml xmlns="https://developers.google.com/blockly/xml" id="startBlocks" style="display: none">
+    <block type="controls_if" inline="false" x="20" y="20">
+      <mutation else="1"></mutation>
+      <value name="IF0">
+        <block type="logic_compare" inline="true">
+          <field name="OP">EQ</field>
+          <value name="A">
+            <block type="math_arithmetic" inline="true">
+              <field name="OP">MULTIPLY</field>
+              <value name="A">
+                <block type="math_number">
+                  <field name="NUM">6</field>
+                </block>
+              </value>
+              <value name="B">
+                <block type="math_number">
+                  <field name="NUM">7</field>
+                </block>
+              </value>
+            </block>
+          </value>
+          <value name="B">
+            <block type="math_number">
+              <field name="NUM">42</field>
+            </block>
+          </value>
+        </block>
+      </value>
+      <statement name="DO0">
+        <block type="text_print" inline="false">
+          <value name="TEXT">
+            <block type="text">
+              <field name="TEXT">Don't panic</field>
+            </block>
+          </value>
+        </block>
+      </statement>
+      <statement name="ELSE">
+        <block type="text_print" inline="false">
+          <value name="TEXT">
+            <block type="text">
+              <field name="TEXT">Panic</field>
+            </block>
+          </value>
+        </block>
+      </statement>
+    </block>
+  </xml>
+      </td>
+      <!--右ペイン（コード出力部）-->
+      <td style="width:38.5%">
+        <textarea id="code_output" readonly></textarea>
+      </td>
+    </tr>
+  </table>
+
+  <script>
+    // ウェブページのJavaScript記述部
+    var demoWorkspace = new Blockly.Workspace();
+    var demoWorkspace = Blockly.inject('blocklyDiv',
+        {media: './media/', toolbox: document.getElementById('toolbox')});
+    Blockly.Xml.domToWorkspace(document.getElementById('startBlocks'),
+                               demoWorkspace);
+    
+    function showJavaScript() {
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      var code = Blockly.JavaScript.workspaceToCode(demoWorkspace);
+      document.getElementById('code_output').value = code;
+    }
+    
+    function showPython() {
+      var code = Blockly.Python.workspaceToCode(demoWorkspace);
+      document.getElementById('code_output').value = code;
+    }
+    
+    function showXml() {
+      var xml = Blockly.Xml.workspaceToDom(demoWorkspace);
+      var code = Blockly.Xml.domToPrettyText(xml);
+      document.getElementById('code_output').value = code;
+    }
+    
+    function clearWorkspace() {
+      // ワークスペース初期化関数
+      demoWorkspace.clear();
+    }
+    
+    function uploadXml() {
+      // XMLソース取り込み関数
+      const showOpenFileDialog = () => {
+        return new Promise(resolve => {
+          const input = document.createElement('input');
+          input.type = 'file';
+          input.accept = '.blockly';
+          input.onchange = event => { resolve(event.target.files[0]); };
+          input.click();
+        });
+      };
+      
+      const readAsText = file => {
+        return new Promise(resolve => {
+          const reader = new FileReader();
+          reader.readAsText(file);
+          reader.onload = () => { resolve(reader.result); };
+        });
+      };
+      
+      (async () => {
+        const file = await showOpenFileDialog();
+        const content = await readAsText(file);
+        try {
+          var xml = Blockly.Xml.textToDom(content);
+        } catch (e) {
+          alert(e);
+          return;
+        }
+        demoWorkspace.clear();
+        Blockly.Xml.domToWorkspace(xml, demoWorkspace);
+        alert(content);
+      })();
+    }
+    
+    function downloadXml() {
+      // XMLソース書き出し関数
+      try {
+        var xml = Blockly.Xml.workspaceToDom(demoWorkspace);
+      } catch (e) {
+        alert(e);
+        return;
+      }
+      var sourcexml = Blockly.Xml.domToPrettyText(xml);
+      var sourcename = prompt('保存するプログラムに名前を付けて下さい。');
+      while (!sourcename.length) {
+        sourcename = prompt('名前を入力してください。');
+      }
+      var sourceextension = '.blockly'
+      const a = document.createElement('a');
+      a.href = 'data:text/plain,' + encodeURIComponent(sourcexml);
+      a.download = sourcename + sourceextension;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+    
+    function downloadHtml() {
+    // 実行可能なWebページの生成・出力関数
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+        var pagescript = Blockly.JavaScript.workspaceToCode(demoWorkspace);
+      } catch (e) {
+        alert(e);
+        return;
+      }
+      var pagebegin = '\<\!DOCTYPE html\>\n\<html lang\=\"ja\"\>\n\<head\>\n\<meta charset\=\"utf-8\"\/\>\n\<\/head\>\n\<script\>\n\n';
+      var pageend = '\n\<\/script\>\n\<\/html\>';
+      var pagecode = pagebegin + pagescript + pageend;
+      var sourcename = prompt('保存するプログラムに名前を付けて下さい。');
+      while (!sourcename.length) {
+        sourcename = prompt('名前を入力してください。');
+      }
+      var sourceextension = '.html'
+      const a = document.createElement('a');
+      a.href = 'data:text/html,' + encodeURIComponent(pagecode);
+      a.download = sourcename + sourceextension;
+      a.style.display = 'none';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+    
+    function runCode() {
+      // JavaScript の生成・実行関数
+      window.LoopTrap = 1000;
+      Blockly.JavaScript.INFINITE_LOOP_TRAP =
+          'if (--window.LoopTrap == 0) throw "Infinite loop.";\n';
+      var code = Blockly.JavaScript.workspaceToCode(demoWorkspace);
+      Blockly.JavaScript.INFINITE_LOOP_TRAP = null;
+      try {
+        eval(code);
+      } catch (e) {
+        alert(e);
+      }
+    }
+  </script>
+
+  <br>
+
+  <!--Blocklyサンプルコードのオマージュ元の紹介記事へのリンク-->
+  <a href="https://ja.wikipedia.org/wiki/%E7%94%9F%E5%91%BD%E3%80%81%E5%AE%87%E5%AE%99%E3%80%81%E3%81%9D%E3%81%97%E3%81%A6%E4%B8%87%E7%89%A9%E3%81%AB%E3%81%A4%E3%81%84%E3%81%A6%E3%81%AE%E7%A9%B6%E6%A5%B5%E3%81%AE%E7%96%91%E5%95%8F%E3%81%AE%E7%AD%94%E3%81%88">生命、宇宙、そして万物についての究極の疑問の答え＝４２</a>
+
+</body>
+</html>
